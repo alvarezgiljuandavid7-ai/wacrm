@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Gemeleo</title>
+<style>
+  @font-face { font-family: 'Archivo Black'; src: url(fonts/ArchivoBlack-Regular.ttf); }
+  @font-face { font-family: Archivo; font-weight: 500; src: url(fonts/Archivo-500.ttf); }
+  @font-face { font-family: Archivo; font-weight: 600; src: url(fonts/Archivo-600.ttf); }
+  @font-face { font-family: Archivo; font-weight: 700; src: url(fonts/Archivo-700.ttf); }
+
+  :root {
+    --bg: #F3EDE4;
+    --ink: #111111;
+    --terra: #C0431B;
+    --gold: #B8935A;
+    --muted: #6B6358;
+    --line: #E3DACB;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: Archivo, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .black { font-family: 'Archivo Black', sans-serif; font-weight: 400; }
+
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--bg); }
+  #vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 65% at 50% 45%, rgba(243,237,228,0) 60%, rgba(110,90,60,.08) 100%); }
+  .scene { position: absolute; inset: 0; display: none; }
+  .abs { position: absolute; will-change: transform, opacity; }
+  .rule { height: 6px; background: var(--gold); transform-origin: 0 50%; }
+
+  /* hook */
+  #hook { left: 90px; top: 700px; width: 900px; font-size: 112px; line-height: 1.06; letter-spacing: -2px; }
+  #hook .ln { display: block; }
+  #hookRule { left: 90px; top: 620px; width: 120px; }
+
+  /* gemeleo */
+  #label { left: 90px; top: 600px; display: flex; align-items: center; gap: 18px; padding: 18px 30px 18px 24px;
+           background: var(--terra); color: var(--bg); font-size: 40px; letter-spacing: 5px; border-radius: 10px; }
+  #def { left: 90px; top: 740px; width: 910px; font-size: 76px; line-height: 1.14; letter-spacing: -1px; }
+  #def .t { color: var(--terra); }
+  #def .g { background: linear-gradient(transparent 70%, rgba(184,147,90,.55) 70%, rgba(184,147,90,.55) 94%, transparent 94%); }
+
+  /* phone */
+  #phone { left: 200px; top: 260px; width: 680px; height: 1390px; border-radius: 92px; padding: 18px;
+           background: linear-gradient(150deg, #3b3b3d 0%, #1a1a1b 18%, #0c0c0d 60%, #232325 100%);
+           box-shadow: 0 60px 110px -40px rgba(70,50,25,.45), 0 22px 40px -10px rgba(40,30,20,.22), inset 0 0 0 2px #4a4a4c, inset 0 0 0 7px #111; }
+  #phone::before, #phone::after { content: ''; position: absolute; width: 6px; border-radius: 3px; background: #2a2a2b; }
+  #phone::before { left: -5px; top: 300px; height: 110px; }
+  #phone::after { right: -5px; top: 360px; height: 170px; }
+  #screen { position: relative; width: 644px; height: 1354px; border-radius: 76px; overflow: hidden; background: #FBF8F3; }
+  #island { position: absolute; left: 222px; top: 20px; width: 200px; height: 58px; border-radius: 30px; background: #050505; }
+  #status { position: absolute; left: 62px; right: 52px; top: 30px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 29px; }
+  #status .r { display: flex; align-items: center; gap: 12px; }
+  .batt { width: 50px; height: 24px; border: 2.5px solid rgba(17,17,17,.45); border-radius: 8px; padding: 2.5px; position: relative; }
+  .batt i { display: block; width: 78%; height: 100%; background: var(--ink); border-radius: 3px; }
+  .batt::after { content: ''; position: absolute; right: -7px; top: 6px; width: 3px; height: 8px; border-radius: 2px; background: rgba(17,17,17,.45); }
+  #app { position: absolute; left: 36px; right: 36px; top: 120px; }
+  #app .k { font-weight: 600; font-size: 28px; color: var(--muted); letter-spacing: .5px; display: flex; justify-content: space-between; }
+  #app .k b { font-weight: 700; color: var(--gold); }
+  #app h2 { font-size: 58px; line-height: 1.08; letter-spacing: -1px; margin-top: 10px; }
+  #app .bar { height: 6px; background: var(--line); border-radius: 3px; margin-top: 26px; overflow: hidden; }
+  #app .bar i { display: block; height: 100%; width: 0; background: var(--terra); }
+  #list { position: absolute; left: 28px; right: 28px; top: 400px; display: flex; flex-direction: column; gap: 28px; }
+  .item { background: #fff; border: 1.5px solid var(--line); border-radius: 22px; padding: 40px 32px 44px; display: flex; gap: 24px; align-items: flex-start;
+          box-shadow: 0 18px 30px -22px rgba(70,50,25,.35); }
+  .item .n { flex: none; width: 72px; height: 72px; border-radius: 14px; background: var(--terra); color: var(--bg); display: grid; place-items: center; font-size: 34px; }
+  .item .key { font-size: 42px; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; }
+    .item .body { font-weight: 600; font-size: 42px; line-height: 1.22; color: #2A2622; margin-top: 6px; }
+  .item .body em { font-style: normal; color: var(--terra); }
+  #home { position: absolute; left: 222px; bottom: 16px; width: 200px; height: 9px; border-radius: 5px; background: #111; }
+
+  /* alert */
+  #alertBg { left: 0; top: 0; width: 1080px; height: 1920px; background: var(--terra); }
+  #alertIcon { left: 440px; top: 470px; width: 200px; height: 200px; }
+  #alertTxt { left: 90px; top: 760px; width: 900px; text-align: center; color: var(--bg); font-size: 84px; line-height: 1.12; letter-spacing: -1px; }
+  #alertTxt .soft { opacity: .78; }
+  #alertTxt .big { display: inline-block; font-size: 150px; letter-spacing: -3px; margin-top: 26px; border-bottom: 10px solid var(--bg); line-height: 1; padding-bottom: 10px; }
+  #alertTxt svg { vertical-align: -6px; margin-right: 16px; }
+
+  /* brand */
+  #robot { left: 400px; top: 560px; width: 280px; height: 280px; }
+  #brand { left: 0; top: 920px; width: 1080px; text-align: center; font-size: 104px; letter-spacing: -2px; }
+  #brandRule { left: 480px; top: 1075px; width: 120px; transform-origin: 50% 50%; }
+  #tagline { left: 0; top: 1115px; width: 1080px; text-align: center; font-weight: 600; font-size: 46px; color: var(--muted); }
+  #tagline b { font-weight: 700; color: var(--gold); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="vignette"></div>
+
+  <div class="scene" id="S1">
+    <div class="abs rule" id="hookRule"></div>
+    <div class="abs black" id="hook">
+      <span class="ln abs-ln" id="h1">Pagó la moto…</span>
+      <span class="ln abs-ln" id="h2">y en un retén <span style="color:var(--terra)">se la quitan.</span></span>
+    </div>
+  </div>
+
+  <div class="scene" id="S2">
+    <div class="abs black" id="label"><span id="sirenIc"></span>EL GEMELEO</div>
+    <div class="abs black" id="def">Una moto robada con los números del motor <span class="t">regrabados</span> para <span class="g">parecer legal.</span></div>
+  </div>
+
+  <div class="scene" id="S3">
+    <div class="abs" id="phone">
+      <div id="screen">
+        <div id="island"></div>
+        <div id="status"><span>9:41</span><span class="r" id="statusIcons"></span></div>
+        <div id="app">
+          <div class="k"><span>Antes de pagar la moto</span><b id="count">0 / 3</b></div>
+          <h2 class="black">Revise estos<br>3 registros</h2>
+          <div class="bar"><i id="prog"></i></div>
+        </div>
+        <div id="list">
+          <div class="item" id="it1"><div class="n black">1</div><div><div class="key black">RUNT:</div><div class="body">pida el <em>histórico de dueños</em></div></div></div>
+          <div class="item" id="it2"><div class="n black">2</div><div><div class="key black">SIMIT:</div><div class="body">revise <em>multas pendientes</em></div></div></div>
+          <div class="item" id="it3"><div class="n black">3</div><div><div class="key black">SIJIN:</div><div class="body">pida las <em>improntas del motor y el chasis</em></div></div></div>
+        </div>
+        <div id="home"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene" id="S4">
+    <div class="abs" id="alertBg"></div>
+    <div class="abs" id="alertIcon"></div>
+    <div class="abs black" id="alertTxt"><span class="soft"><span id="flagIc"></span>Si le dicen</span><br>‘no hay tiempo para revisarla’,<br><span class="big">corra.</span></div>
+  </div>
+
+  <div class="scene" id="S5">
+    <div class="abs" id="robot"></div>
+    <div class="abs black" id="brand">Juan Gil Motos</div>
+    <div class="abs rule" id="brandRule"></div>
+    <div class="abs" id="tagline">Motos en Colombia, <b>con datos.</b></div>
+  </div>
+</div>
+
+<script>
+/* Deterministic renderer: window.renderFrame(t) paints the state at t seconds.
+   Motion is ease-out only (no overshoot). */
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, x) => a + (b - a) * x;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = x => 1 - Math.pow(1 - x, 4);   // quart: fast start, soft landing, never passes 1
+const easeIn = x => x * x;
+
+/* ---------- timeline (seconds) ----------
+   Scenes cut back-to-back; each text has [in, inEnd] entrance and an `out` time.
+   Reading rule: fully-visible time (inEnd -> out) >= 2 s + 0.3 s per word beyond 5. */
+const SC = { S1: [0, 4.0], S2: [4.0, 8.9], S3: [8.9, 21.4], S4: [21.4, 26.3], S5: [26.3, 30.0] };
+const EXIT = 0.1; // quick cut-out at the end of each scene
+const TEXTS = [
+  { id: 'hook',    text: 'Pagó la moto… y en un retén se la quitan.', in: 0.00, inEnd: 0.38, out: 3.9 },
+  { id: 'label',   text: 'EL GEMELEO', in: 4.00, inEnd: 4.30, out: 8.8 },
+  { id: 'def',     text: 'Una moto robada con los números del motor regrabados para parecer legal.', in: 4.35, inEnd: 4.65, out: 8.8 },
+  { id: 'it1',     text: 'RUNT: pida el histórico de dueños', in: 9.35, inEnd: 9.70, out: 21.3 },
+  { id: 'it2',     text: 'SIMIT: revise multas pendientes', in: 13.10, inEnd: 13.45, out: 21.3 },
+  { id: 'it3',     text: 'SIJIN: pida las improntas del motor y el chasis', in: 16.90, inEnd: 17.25, out: 21.3 },
+  { id: 'alertTxt', text: "Si le dicen 'no hay tiempo para revisarla', corra.", in: 21.70, inEnd: 22.05, out: 26.2 },
+  { id: 'brand',   text: 'Juan Gil Motos', in: 26.55, inEnd: 26.90, out: 30.0 },
+  { id: 'tagline', text: 'Motos en Colombia, con datos.', in: 26.75, inEnd: 27.10, out: 30.0 },
+];
+const T = Object.fromEntries(TEXTS.map(x => [x.id, x]));
+window.readingReport = () => TEXTS.map(x => {
+  const words = x.text.split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w)).length;
+  const need = 2 + Math.max(0, words - 5) * 0.3;
+  const have = x.out - x.inEnd;
+  return { id: x.id, words, need: +need.toFixed(2), have: +have.toFixed(2), ok: have + 1e-9 >= need };
+});
+
+/* ---------- icons ---------- */
+const svg = (inner, size, stroke, sw = 2) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+$('sirenIc').innerHTML = svg('<path d="M7 18v-5a5 5 0 0 1 10 0v5"/><path d="M4.5 18h15v3h-15z"/><path d="M12 2.5v2M4.6 5.6 6 7M19.4 5.6 18 7M2.5 12h1.8M19.7 12h1.8"/>', 46, '#F3EDE4', 2.2);
+$('alertIcon').innerHTML = svg('<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4.5"/><path d="M12 17.2h.01"/>', 200, '#F3EDE4', 1.6);
+$('flagIc').innerHTML = svg('<path d="M4 22V3"/><path d="M4 4h13l-2.5 4.5L17 13H4" fill="#F3EDE4"/>', 72, '#F3EDE4', 2);
+$('statusIcons').innerHTML =
+  `<svg width="36" height="22" viewBox="0 0 36 22"><rect x="0" y="15" width="6" height="7" rx="1.5" fill="#111"/><rect x="10" y="10" width="6" height="12" rx="1.5" fill="#111"/><rect x="20" y="5" width="6" height="17" rx="1.5" fill="#111"/><rect x="30" y="0" width="6" height="22" rx="1.5" fill="#111"/></svg>` +
+  `<svg width="32" height="23" viewBox="0 0 32 23"><path d="M16 21.5 20 17a6 6 0 0 0-8 0z" fill="#111"/><path d="M8.6 13.6a10.5 10.5 0 0 1 14.8 0" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M3.8 8.8a17.5 17.5 0 0 1 24.4 0" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/></svg>` +
+  `<span class="batt"><i></i></span>`;
+$('robot').innerHTML = `<svg viewBox="0 0 200 200" width="100%" height="100%">
+  <line x1="100" y1="26" x2="100" y2="48" stroke="#111" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="100" cy="20" r="10" fill="#B8935A"/>
+  <rect x="24" y="80" width="14" height="36" rx="3" fill="#111"/>
+  <rect x="162" y="80" width="14" height="36" rx="3" fill="#111"/>
+  <rect x="42" y="50" width="116" height="96" rx="16" fill="#F3EDE4" stroke="#111" stroke-width="9"/>
+  <rect id="eyeL" x="70" y="82" width="18" height="24" rx="3" fill="#C0431B"/>
+  <rect id="eyeR" x="112" y="82" width="18" height="24" rx="3" fill="#C0431B"/>
+  <line x1="80" y1="124" x2="120" y2="124" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+  <rect x="88" y="146" width="24" height="12" fill="#111"/>
+  <path d="M50 190 V178 Q50 160 70 160 H130 Q150 160 150 178 V190" fill="none" stroke="#111" stroke-width="9" stroke-linecap="round"/>
+</svg>`;
+
+/* ---------- helpers ---------- */
+function tf(el, { x = 0, y = 0, s = 1, o = 1 } = {}) {
+  el.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+  el.style.opacity = o;
+}
+// clean entrance (rise + fade), and a fast cut-out at `out`
+function enter(el, t, a, b, { dy = 40, s0 = 1, out = null } = {}) {
+  const p = easeOut(prog(t, a, b));
+  let y = (1 - p) * dy, o = t < a ? 0 : p, s = lerp(s0, 1, p);
+  if (out != null && t >= out) { const q = easeIn(prog(t, out, out + EXIT)); y -= q * 30; o *= 1 - q; }
+  tf(el, { y, s, o });
+}
+
+/* ---------- render ---------- */
+window.renderFrame = function (t) {
+  for (const [id, [a, b]] of Object.entries(SC)) $(id).style.display = t >= a && t < b + (id === 'S5' ? 1 : 0) ? 'block' : 'none';
+
+  // S1 hook
+  if (t < SC.S1[1]) {
+    const r = easeOut(prog(t, 0, 0.3));
+    $('hookRule').style.transform = `scaleX(${r})`;
+    $('hookRule').style.opacity = t >= T.hook.out ? 1 - prog(t, T.hook.out, T.hook.out + EXIT) : 1;
+    enter($('h1'), t, 0.0, 0.30, { out: T.hook.out });
+    enter($('h2'), t, 0.08, T.hook.inEnd, { out: T.hook.out });
+  }
+
+  // S2 gemeleo
+  if (t >= SC.S2[0] && t < SC.S2[1]) {
+    enter($('label'), t, T.label.in, T.label.inEnd, { dy: 24, out: T.label.out });
+    enter($('def'), t, T.def.in, T.def.inEnd, { out: T.def.out });
+  }
+
+  // S3 phone + accumulating list
+  if (t >= SC.S3[0] && t < SC.S3[1]) {
+    const p = easeOut(prog(t, 8.9, 9.35));
+    let y = (1 - p) * 180, o = p;
+    const out = SC.S3[1] - EXIT;
+    if (t >= out) { const q = easeIn(prog(t, out, SC.S3[1])); y -= q * 40; o *= 1 - q; }
+    tf($('phone'), { y, s: lerp(.96, 1, p), o });
+    let done = 0;
+    ['it1', 'it2', 'it3'].forEach(id => {
+      const x = T[id];
+      enter($(id), t, x.in, x.inEnd, { dy: 28 });
+      if (t >= x.in) done++;
+    });
+    $('count').textContent = `${done} / 3`;
+    const target = ['it1', 'it2', 'it3'].reduce((acc, id) => acc + easeOut(prog(t, T[id].in, T[id].inEnd)), 0) / 3;
+    $('prog').style.width = (target * 100) + '%';
+  }
+
+  // S4 alert
+  if (t >= SC.S4[0] && t < SC.S4[1]) {
+    const w = easeOut(prog(t, 21.4, 21.7));
+    $('alertBg').style.clipPath = `inset(${(1 - w) * 100}% 0 0 0)`;
+    const out = SC.S4[1] - EXIT;
+    const q = t >= out ? easeIn(prog(t, out, SC.S4[1])) : 0;
+    enter($('alertIcon'), t, 21.55, 21.85, { dy: 30, s0: .92 });
+    $('alertIcon').style.opacity *= 1 - q;
+    enter($('alertTxt'), t, T.alertTxt.in, T.alertTxt.inEnd, { out: T.alertTxt.out });
+  }
+
+  // S5 brand
+  if (t >= SC.S5[0]) {
+    enter($('robot'), t, 26.3, 26.75, { dy: 30, s0: .94 });
+    const on = prog(t, 26.6, 26.8);
+    $('eyeL').setAttribute('opacity', lerp(.15, 1, on)); $('eyeR').setAttribute('opacity', lerp(.15, 1, on));
+    enter($('brand'), t, T.brand.in, T.brand.inEnd, { dy: 34 });
+    $('brandRule').style.transform = `scaleX(${easeOut(prog(t, 26.7, 27.1))})`;
+    enter($('tagline'), t, T.tagline.in, T.tagline.inEnd, { dy: 24 });
+  }
+};
+
+window.ready = document.fonts.ready
+  .then(() => Promise.all(['40px "Archivo Black"', '500 40px Archivo', '600 40px Archivo', '700 40px Archivo'].map(f => document.fonts.load(f))))
+  .then(() => { window.renderFrame(0); return true; });
+</script>
+</body>
+</html>
