@@ -1,0 +1,29 @@
+{
+  "voice": {
+    "voiceId": "EXAVITQu4vr4xnSDxMaL",
+    "modelId": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.3
+    }
+  },
+  "voiceovers": [
+    {
+      "id": "demo/intro",
+      "text": "Gestiona todas tus conversaciones de WhatsApp desde un solo lugar."
+    }
+  ],
+  "sfx": [
+    {
+      "id": "whoosh",
+      "prompt": "Fast cinematic whoosh transition, clean, no music",
+      "durationSeconds": 1
+    },
+    {
+      "id": "notification",
+      "prompt": "Short soft message notification pop, modern UI sound",
+      "durationSeconds": 0.8
+    }
+  ]
+}

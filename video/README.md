@@ -31,6 +31,18 @@ npm run dev
 npx remotion render
 ```
 
+**Generate voiceovers and sound effects (ElevenLabs)**
+
+Set `ELEVENLABS_API_KEY` in your environment or in `.env` (copy `.env.example`), describe the clips in `audio.config.json`, then run:
+
+```console
+npm run audio              # only missing files
+npm run audio -- --force   # regenerate all
+npm run audio -- whoosh    # only specific ids
+```
+
+Voiceovers are written to `public/voiceover/<id>.mp3` and sound effects to `public/sfx/<id>.mp3`. Use them in a composition with `<Audio src={staticFile("sfx/whoosh.mp3")} />`.
+
 **Upgrade Remotion**
 
 ```console
