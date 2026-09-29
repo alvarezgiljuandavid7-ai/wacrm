@@ -1,0 +1,17 @@
+{
+  "fps": 30,
+  "durationFrames": 540,
+  "channelName": "[NOMBRE DEL CANAL]",
+  "cues": [
+    { "id": "whoosh",      "sfx": "whoosh",      "frame": 11,  "align": "peak",  "gainDb": -4 },
+    { "id": "pop",         "sfx": "pop",         "frame": 13,  "align": "onset", "gainDb": -1 },
+    { "id": "click1",      "sfx": "click",       "frame": 124, "align": "onset", "gainDb": -3, "pan": 0.15 },
+    { "id": "click2",      "sfx": "click",       "frame": 162, "align": "onset", "gainDb": -3, "pan": 0.15 },
+    { "id": "beep",        "sfx": "beep",        "frame": 165, "align": "onset", "gainDb": -7 },
+    { "id": "click3",      "sfx": "click",       "frame": 200, "align": "onset", "gainDb": -3, "pan": 0.15 },
+    { "id": "swoosh",      "sfx": "swoosh",      "frame": 246, "align": "peak",  "gainDb": -5 },
+    { "id": "ding",        "sfx": "ding",        "frame": 278, "align": "onset", "gainDb": -6 },
+    { "id": "stinger",     "sfx": "stinger",     "frame": 396, "align": "onset", "gainDb": -1 },
+    { "id": "click_final", "sfx": "click_final", "frame": 518, "align": "onset", "gainDb": -8, "pan": 0.1 }
+  ]
+}
