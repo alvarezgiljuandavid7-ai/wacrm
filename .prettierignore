@@ -8,3 +8,8 @@ package-lock.json
 # Generated / vendored
 supabase/migrations
 public/opus
+
+# Standalone Remotion project and vendored agent skills
+video
+.claude
+skills-lock.json
